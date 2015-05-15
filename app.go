@@ -3,6 +3,7 @@ package spartan
 import "github.com/nsf/termbox-go"
 
 type app struct {
+	views []View
 }
 
 func New() app {
@@ -44,4 +45,11 @@ func (a app) Redraw() {
 }
 
 func (a app) draw() {
+	for _, view := range a.views {
+		view.draw()
+	}
+}
+
+func (a *app) AddView(view View) {
+	a.views = append(a.views, view)
 }
