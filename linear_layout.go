@@ -4,16 +4,19 @@ import (
 	"errors"
 
 	"github.com/nsf/termbox-go"
+	"github.com/sparkymat/spartan/direction"
+	"github.com/sparkymat/spartan/gravity"
 	"github.com/sparkymat/spartan/size"
 )
 
 type LinearLayout struct {
-	parent ViewGroup
-	views  []View
-	x      uint32
-	y      uint32
-	width  size.Size
-	height size.Size
+	parent    ViewGroup
+	views     []View
+	x         uint32
+	y         uint32
+	width     size.Size
+	height    size.Size
+	direction direction.Type
 }
 
 func (layout *LinearLayout) SetWidth(width size.Size) {
@@ -91,8 +94,60 @@ func (layout LinearLayout) GetAbsoluteHeight() uint32 {
 }
 
 func (layout LinearLayout) draw() {
-	for _, view := range layout.views {
-		view.draw()
+	if layout.direction == direction.Vertical {
+		heights := make([]uint32, len(layout.views), len(layout.views))
+
+		stretchiesCount := uint32(0)
+		totalFixedHeight := uint32(0)
+
+		for i, view := range layout.views {
+			if view.GetHeight() == size.MatchParent {
+				stretchiesCount += 1
+			} else {
+				heights[i] = uint32(view.GetHeight())
+				totalFixedHeight += uint32(view.GetHeight())
+			}
+		}
+
+		if stretchiesCount > 0 {
+
+			for i, view := range layout.views {
+				if view.GetHeight() == size.MatchParent {
+					heights[i] = (layout.GetAbsoluteHeight() - totalFixedHeight) / stretchiesCount
+				}
+			}
+		}
+
+		currentTop := uint32(0)
+
+		var parentWidth uint32
+
+		if layout.parent == nil {
+			pw, _ := termbox.Size()
+			parentWidth = uint32(pw)
+		} else {
+			currentTop = layout.parent.GetAbsoluteY()
+			parentWidth = layout.parent.GetAbsoluteWidth()
+		}
+
+		for i, view := range layout.views {
+			height := heights[i]
+			width := view.GetAbsoluteWidth()
+
+			currentLeft := uint32(0)
+
+			if view.GetLayoutGravity() == gravity.Left {
+				currentLeft = view.GetLeftMargin()
+			} else if view.GetLayoutGravity() == gravity.Right {
+				currentLeft = (parentWidth - width - view.GetRightMargin())
+			} else if view.GetLayoutGravity() == gravity.Middle {
+				currentLeft = (parentWidth - width) / 2
+			}
+
+			view.draw(currentLeft, currentTop, currentLeft+width, currentTop+height)
+			currentTop += height
+		}
+	} else if layout.direction == direction.Horizontal {
 	}
 }
 
@@ -102,4 +157,12 @@ func (layout LinearLayout) GetParent() ViewGroup {
 
 func (layout *LinearLayout) SetParent(parent ViewGroup) {
 	layout.parent = parent
+}
+
+func (layout *LinearLayout) SetDirection(direction direction.Type) {
+	layout.direction = direction
+}
+
+func (layout LinearLayout) GetDirection() direction.Type {
+	return layout.direction
 }

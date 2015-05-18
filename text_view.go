@@ -2,6 +2,7 @@ package spartan
 
 import (
 	"github.com/nsf/termbox-go"
+	"github.com/sparkymat/spartan/gravity"
 	"github.com/sparkymat/spartan/size"
 )
 
@@ -11,19 +12,19 @@ type TextView struct {
 	foregroundColor termbox.Attribute
 	backgroundColor termbox.Attribute
 
-	leftMargin uint32
-	topMargin  uint32
-	width      size.Size
-	height     size.Size
+	leftMargin   uint32
+	topMargin    uint32
+	rightMargin  uint32
+	bottomMargin uint32
+
+	width  size.Size
+	height size.Size
+
+	layoutGravity gravity.Type
 }
 
-func (box TextView) draw() {
-	left := box.GetAbsoluteX()
-	top := box.GetAbsoluteY()
-	width := box.GetAbsoluteWidth()
-	height := box.GetAbsoluteHeight()
-	right := left + width
-	bottom := top + height
+func (box TextView) draw(left uint32, top uint32, right uint32, bottom uint32) {
+	width := right - left
 
 	for i := left; i < right; i++ {
 		for j := top; j < bottom; j++ {
@@ -62,12 +63,28 @@ func (box *TextView) SetTopMargin(topMargin uint32) {
 	box.topMargin = topMargin
 }
 
+func (box *TextView) SetRightMargin(rightMargin uint32) {
+	box.rightMargin = rightMargin
+}
+
+func (box *TextView) SetBottomMargin(bottomMargin uint32) {
+	box.bottomMargin = bottomMargin
+}
+
 func (box TextView) GetLeftMargin() uint32 {
 	return box.leftMargin
 }
 
 func (box TextView) GetTopMargin() uint32 {
 	return box.topMargin
+}
+
+func (box TextView) GetRightMargin() uint32 {
+	return box.rightMargin
+}
+
+func (box TextView) GetBottomMargin() uint32 {
+	return box.bottomMargin
 }
 
 func (box *TextView) SetColor(color termbox.Attribute) {
@@ -116,4 +133,12 @@ func (box TextView) GetAbsoluteWidth() uint32 {
 
 func (box TextView) GetAbsoluteHeight() uint32 {
 	return GetViewAbsoluteHeight(&box)
+}
+
+func (box *TextView) SetLayoutGravity(gravity gravity.Type) {
+	box.layoutGravity = gravity
+}
+
+func (box TextView) GetLayoutGravity() gravity.Type {
+	return box.layoutGravity
 }
