@@ -148,6 +148,58 @@ func (layout LinearLayout) draw() {
 			currentTop += height
 		}
 	} else if layout.direction == direction.Horizontal {
+		widths := make([]uint32, len(layout.views), len(layout.views))
+
+		stretchiesCount := uint32(0)
+		totalFixedWidth := uint32(0)
+
+		for i, view := range layout.views {
+			if view.GetWidth() == size.MatchParent {
+				stretchiesCount += 1
+			} else {
+				widths[i] = uint32(view.GetWidth())
+				totalFixedWidth += uint32(view.GetWidth())
+			}
+		}
+
+		if stretchiesCount > 0 {
+
+			for i, view := range layout.views {
+				if view.GetWidth() == size.MatchParent {
+					widths[i] = (layout.GetAbsoluteWidth() - totalFixedWidth) / stretchiesCount
+				}
+			}
+		}
+
+		currentLeft := uint32(0)
+
+		var parentHeight uint32
+
+		if layout.parent == nil {
+			_, ph := termbox.Size()
+			parentHeight = uint32(ph)
+		} else {
+			currentLeft = layout.parent.GetAbsoluteX()
+			parentHeight = layout.parent.GetAbsoluteHeight()
+		}
+
+		for i, view := range layout.views {
+			width := widths[i]
+			height := view.GetAbsoluteHeight()
+
+			currentTop := uint32(0)
+
+			if view.GetLayoutGravity() == gravity.Top {
+				currentTop = view.GetTopMargin()
+			} else if view.GetLayoutGravity() == gravity.Bottom {
+				currentTop = (parentHeight - height - view.GetBottomMargin())
+			} else if view.GetLayoutGravity() == gravity.Center {
+				currentTop = (parentHeight - height) / 2
+			}
+
+			view.draw(currentLeft, currentTop, currentLeft+width, currentTop+height)
+			currentLeft += width
+		}
 	}
 }
 
