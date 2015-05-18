@@ -9,13 +9,18 @@ import (
 func TestSanity(t *testing.T) {
 	app := New()
 
-	helloBox := TextBox{text: "Hello, World!"}
-	helloBox.ResizeTo(40, 2)
-	helloBox.PositionTo(4, 4)
-	helloBox.SetForegroundColor(termbox.ColorWhite)
+	layout := LinearLayout{}
+
+	helloBox := TextView{text: "Hello, World!"}
+	helloBox.SetWidth(20)
+	helloBox.SetHeight(1)
+	helloBox.SetLeftMargin(4)
+	helloBox.SetTopMargin(4)
+	helloBox.SetColor(termbox.ColorWhite)
 	helloBox.SetBackgroundColor(termbox.ColorRed)
 
-	app.AddView(&helloBox)
+	layout.AddView(&helloBox)
+	app.SetLayout(&layout)
 
 	app.Run()
 }
