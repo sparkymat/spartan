@@ -36,9 +36,18 @@ func TestSanity(t *testing.T) {
 	noteBox.SetColor(termbox.ColorRed)
 	noteBox.SetBackgroundColor(termbox.ColorBlue)
 
+	successBox := TextView{text: "Huge success"}
+	successBox.SetWidth(15)
+	successBox.SetHeight(size.MatchParent)
+	successBox.SetRightMargin(10)
+	successBox.SetLayoutGravity(gravity.Right)
+	successBox.SetColor(termbox.ColorGreen)
+	successBox.SetBackgroundColor(termbox.ColorYellow)
+
 	layout.AddView(&helloBox)
 	layout.AddView(&triumphBox)
 	layout.AddView(&noteBox)
+	layout.AddView(&successBox)
 
 	app.SetLayout(&layout)
 
