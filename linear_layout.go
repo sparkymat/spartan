@@ -113,7 +113,7 @@ func (layout LinearLayout) GetAbsoluteHeight() uint32 {
 
 func (layout LinearLayout) draw() {
 	containerLeft := layout.GetAbsoluteX()
-	containerTop := layout.GetAbsoluteWidth()
+	containerTop := layout.GetAbsoluteY()
 	containerWidth := layout.GetAbsoluteWidth()
 	containerHeight := layout.GetAbsoluteHeight()
 	containerRight := containerLeft + containerWidth
