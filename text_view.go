@@ -29,12 +29,11 @@ func (box TextView) draw(left uint32, top uint32, right uint32, bottom uint32) {
 	for i := left; i <= right; i++ {
 		for j := top; j <= bottom; j++ {
 			position := (j-top)*width + (i - left)
+			char := ' '
 			if position < uint32(len(box.text)) {
-				char := rune(box.text[position])
-				termbox.SetCell(int(i), int(j), char, box.foregroundColor, box.backgroundColor)
-			} else {
-				termbox.SetCell(int(i), int(j), ' ', box.foregroundColor, box.backgroundColor)
+				char = rune(box.text[position])
 			}
+			termbox.SetCell(int(i), int(j), char, box.foregroundColor, box.backgroundColor)
 		}
 	}
 }
