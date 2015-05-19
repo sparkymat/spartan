@@ -54,4 +54,4 @@ A windowing toolkit based on termbox. Most of the paradigms used here are inspir
 
 produces the following
 
-![Linear layout example](/sparkymat/spartan/master/screenshots/screenshot1.png?raw=true)
+![Linear layout example](/screenshots/screenshot1.png?raw=true)
