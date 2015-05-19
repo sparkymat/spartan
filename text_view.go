@@ -24,10 +24,10 @@ type TextView struct {
 }
 
 func (box TextView) draw(left uint32, top uint32, right uint32, bottom uint32) {
-	width := right - left
+	width := right - left + 1
 
-	for i := left; i < right; i++ {
-		for j := top; j < bottom; j++ {
+	for i := left; i <= right; i++ {
+		for j := top; j <= bottom; j++ {
 			position := (j-top)*width + (i - left)
 			if position < uint32(len(box.text)) {
 				char := rune(box.text[position])

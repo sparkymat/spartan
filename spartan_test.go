@@ -16,6 +16,8 @@ func TestSanity(t *testing.T) {
 	layout.SetDirection(direction.Vertical)
 	layout.SetWidth(size.MatchParent)
 	layout.SetHeight(size.MatchParent)
+	layout.EnableBorder()
+	layout.SetTitle("spartan")
 
 	helloBox := TextView{text: "Hello, World!"}
 	helloBox.SetWidth(20)
