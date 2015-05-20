@@ -116,8 +116,8 @@ func (layout LinearLayout) draw() {
 	containerTop := layout.GetAbsoluteY()
 	containerWidth := layout.GetAbsoluteWidth()
 	containerHeight := layout.GetAbsoluteHeight()
-	containerRight := containerLeft + containerWidth
-	containerBottom := containerTop + containerHeight
+	containerRight := containerLeft + containerWidth - 1
+	containerBottom := containerTop + containerHeight - 1
 
 	if layout.isBordered {
 		containerLeft += 1
@@ -127,6 +127,9 @@ func (layout LinearLayout) draw() {
 		containerTop += 1
 		containerBottom -= 1
 		containerHeight -= 2
+
+		layout.drawBorder()
+		layout.drawTitle()
 	}
 
 	if layout.direction == direction.Vertical {
@@ -256,6 +259,52 @@ func (layout LinearLayout) draw() {
 			view.draw(currentLeft, currentTop, currentLeft+width, currentTop+height)
 			currentLeft += width
 		}
+	}
+}
+
+func (layout LinearLayout) drawBorder() {
+	containerLeft := int(layout.GetAbsoluteX())
+	containerTop := int(layout.GetAbsoluteY())
+	containerWidth := int(layout.GetAbsoluteWidth())
+	containerHeight := int(layout.GetAbsoluteHeight())
+	containerRight := containerLeft + containerWidth - 1
+	containerBottom := containerTop + containerHeight - 1
+
+	leftTop := '\u250c'
+	rightTop := '\u2510'
+	leftBottom := '\u2514'
+	rightBottom := '\u2518'
+
+	horizontal := '\u2500'
+	vertical := '\u2502'
+
+	termbox.SetCell(containerLeft, containerTop, leftTop, termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(containerRight, containerTop, rightTop, termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(containerLeft, containerBottom, leftBottom, termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(containerRight, containerBottom, rightBottom, termbox.ColorDefault, termbox.ColorDefault)
+
+	// Horizontal
+	for i := containerLeft + 1; i <= containerRight-1; i++ {
+		termbox.SetCell(i, containerTop, horizontal, termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(i, containerBottom, horizontal, termbox.ColorDefault, termbox.ColorDefault)
+	}
+
+	// Vertical
+	for j := containerTop + 1; j <= containerBottom-1; j++ {
+		termbox.SetCell(containerLeft, j, vertical, termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(containerRight, j, vertical, termbox.ColorDefault, termbox.ColorDefault)
+	}
+}
+
+func (layout LinearLayout) drawTitle() {
+	containerLeft := int(layout.GetAbsoluteX())
+	containerTop := int(layout.GetAbsoluteY())
+	containerWidth := int(layout.GetAbsoluteWidth())
+	length := len(layout.title)
+	titleLeft := containerLeft + (containerWidth-length)/2
+	titleRight := titleLeft + length - 1
+	for i := titleLeft; i <= titleRight; i++ {
+		termbox.SetCell(i, containerTop, rune(layout.title[i-titleLeft]), termbox.AttrBold|termbox.ColorDefault, termbox.ColorDefault)
 	}
 }
 
