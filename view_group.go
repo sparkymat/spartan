@@ -4,8 +4,6 @@ import "github.com/sparkymat/spartan/size"
 
 type ViewGroup interface {
 	AddView(view View)
-	GetChildAt(index uint32) (View, error)
-	GetChildCount() uint32
 
 	GetAbsoluteX() uint32
 	GetAbsoluteY() uint32

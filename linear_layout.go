@@ -1,8 +1,6 @@
 package spartan
 
 import (
-	"errors"
-
 	"github.com/nsf/termbox-go"
 	"github.com/sparkymat/spartan/direction"
 	"github.com/sparkymat/spartan/gravity"
@@ -22,20 +20,6 @@ type LinearLayout struct {
 	isBordered    bool
 	title         string
 	layoutGravity gravity.Type
-}
-
-func (layout *LinearLayout) SetColor(color termbox.Attribute) {
-}
-
-func (layout LinearLayout) GetColor() termbox.Attribute {
-	return termbox.ColorDefault
-}
-
-func (layout *LinearLayout) SetBackgroundColor(color termbox.Attribute) {
-}
-
-func (layout LinearLayout) GetBackgroundColor() termbox.Attribute {
-	return termbox.ColorDefault
 }
 
 func (layout *LinearLayout) SetTitle(title string) {
@@ -112,18 +96,6 @@ func (layout LinearLayout) GetBottomMargin() uint32 {
 
 func (layout *LinearLayout) AddView(view View) {
 	layout.views = append(layout.views, view)
-}
-
-func (layout LinearLayout) GetChildCount() uint32 {
-	return uint32(len(layout.views))
-}
-
-func (layout LinearLayout) GetChildAt(index uint32) (View, error) {
-	if index >= layout.GetChildCount() {
-		return nil, errors.New("index out of bounds")
-	}
-
-	return layout.views[index], nil
 }
 
 func (layout LinearLayout) GetAbsoluteX() uint32 {

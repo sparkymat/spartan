@@ -110,30 +110,6 @@ func (box TextView) GetParent() ViewGroup {
 	return box.parent
 }
 
-func (box TextView) GetAbsoluteX() uint32 {
-	if box.parent == nil {
-		return box.leftMargin
-	} else {
-		return box.leftMargin + box.parent.GetAbsoluteX()
-	}
-}
-
-func (box TextView) GetAbsoluteY() uint32 {
-	if box.parent == nil {
-		return box.topMargin
-	} else {
-		return box.topMargin + box.parent.GetAbsoluteY()
-	}
-}
-
-func (box TextView) GetAbsoluteWidth() uint32 {
-	return GetViewAbsoluteWidth(&box)
-}
-
-func (box TextView) GetAbsoluteHeight() uint32 {
-	return GetViewAbsoluteHeight(&box)
-}
-
 func (box *TextView) SetLayoutGravity(gravity gravity.Type) {
 	box.layoutGravity = gravity
 }
