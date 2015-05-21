@@ -383,6 +383,15 @@ func (layout LinearLayout) drawBorder(left uint32, top uint32, right uint32, bot
 }
 
 func (layout LinearLayout) drawTitle(left uint32, top uint32, right uint32, bottom uint32) {
+	length := len(layout.title)
+	layoutWidth := right - left + 1
+	start := int(left) + (int(layoutWidth)-length)/2
+	end := start + length - 1
+
+	for i := start; i <= end; i++ {
+		termbox.SetCell(i, int(top), rune(layout.title[i-start]), termbox.ColorWhite|termbox.AttrBold, termbox.ColorDefault)
+	}
+
 }
 
 func (layout LinearLayout) GetParent() ViewGroup {

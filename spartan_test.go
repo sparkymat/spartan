@@ -21,7 +21,7 @@ func TestSanity(t *testing.T) {
 
 	menuLayout := LinearLayout{}
 	menuLayout.SetDirection(direction.Vertical)
-	menuLayout.SetWidth(size.MatchParent)
+	menuLayout.SetWidth(24)
 	menuLayout.SetHeight(size.MatchParent)
 	menuLayout.EnableBorder()
 	menuLayout.SetTitle("menu")
