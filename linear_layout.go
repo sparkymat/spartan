@@ -10,15 +10,32 @@ import (
 )
 
 type LinearLayout struct {
-	parent     ViewGroup
-	views      []View
-	x          uint32
-	y          uint32
-	width      size.Size
-	height     size.Size
-	direction  direction.Type
-	isBordered bool
-	title      string
+	parent        ViewGroup
+	views         []View
+	leftMargin    uint32
+	topMargin     uint32
+	rightMargin   uint32
+	bottomMargin  uint32
+	width         size.Size
+	height        size.Size
+	direction     direction.Type
+	isBordered    bool
+	title         string
+	layoutGravity gravity.Type
+}
+
+func (layout *LinearLayout) SetColor(color termbox.Attribute) {
+}
+
+func (layout LinearLayout) GetColor() termbox.Attribute {
+	return termbox.ColorDefault
+}
+
+func (layout *LinearLayout) SetBackgroundColor(color termbox.Attribute) {
+}
+
+func (layout LinearLayout) GetBackgroundColor() termbox.Attribute {
+	return termbox.ColorDefault
 }
 
 func (layout *LinearLayout) SetTitle(title string) {
@@ -37,20 +54,60 @@ func (layout *LinearLayout) DisableBorder() {
 	layout.isBordered = false
 }
 
+func (layout *LinearLayout) SetLayoutGravity(gravity gravity.Type) {
+	layout.layoutGravity = gravity
+}
+
+func (layout LinearLayout) GetLayoutGravity() gravity.Type {
+	return layout.layoutGravity
+}
+
 func (layout *LinearLayout) SetWidth(width size.Size) {
 	layout.width = width
+}
+
+func (layout LinearLayout) GetWidth() size.Size {
+	return layout.width
 }
 
 func (layout *LinearLayout) SetHeight(height size.Size) {
 	layout.height = height
 }
 
-func (layout *LinearLayout) SetLeftMargin(x uint32) {
-	layout.x = x
+func (layout LinearLayout) GetHeight() size.Size {
+	return layout.height
 }
 
-func (layout *LinearLayout) SetTopMargin(y uint32) {
-	layout.y = y
+func (layout *LinearLayout) SetLeftMargin(leftMargin uint32) {
+	layout.leftMargin = leftMargin
+}
+
+func (layout *LinearLayout) SetTopMargin(topMargin uint32) {
+	layout.topMargin = topMargin
+}
+
+func (layout *LinearLayout) SetRightMargin(rightMargin uint32) {
+	layout.rightMargin = rightMargin
+}
+
+func (layout *LinearLayout) SetBottomMargin(bottomMargin uint32) {
+	layout.bottomMargin = bottomMargin
+}
+
+func (layout LinearLayout) GetLeftMargin() uint32 {
+	return layout.leftMargin
+}
+
+func (layout LinearLayout) GetTopMargin() uint32 {
+	return layout.topMargin
+}
+
+func (layout LinearLayout) GetRightMargin() uint32 {
+	return layout.rightMargin
+}
+
+func (layout LinearLayout) GetBottomMargin() uint32 {
+	return layout.bottomMargin
 }
 
 func (layout *LinearLayout) AddView(view View) {
@@ -71,17 +128,17 @@ func (layout LinearLayout) GetChildAt(index uint32) (View, error) {
 
 func (layout LinearLayout) GetAbsoluteX() uint32 {
 	if layout.GetParent() == nil {
-		return layout.x
+		return layout.leftMargin
 	} else {
-		return layout.GetParent().GetAbsoluteX() + layout.x
+		return layout.GetParent().GetAbsoluteX() + layout.leftMargin
 	}
 }
 
 func (layout LinearLayout) GetAbsoluteY() uint32 {
 	if layout.GetParent() == nil {
-		return layout.y
+		return layout.topMargin
 	} else {
-		return layout.GetParent().GetAbsoluteY() + layout.y
+		return layout.GetParent().GetAbsoluteY() + layout.topMargin
 	}
 }
 
@@ -111,13 +168,13 @@ func (layout LinearLayout) GetAbsoluteHeight() uint32 {
 	}
 }
 
-func (layout LinearLayout) draw() {
-	containerLeft := layout.GetAbsoluteX()
-	containerTop := layout.GetAbsoluteY()
-	containerWidth := layout.GetAbsoluteWidth()
-	containerHeight := layout.GetAbsoluteHeight()
-	containerRight := containerLeft + containerWidth - 1
-	containerBottom := containerTop + containerHeight - 1
+func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom uint32) {
+	containerLeft := left
+	containerTop := top
+	containerRight := right
+	containerBottom := bottom
+	containerWidth := containerRight - containerLeft + 1
+	containerHeight := containerBottom - containerTop + 1
 
 	if layout.isBordered {
 		containerLeft += 1
@@ -128,8 +185,8 @@ func (layout LinearLayout) draw() {
 		containerBottom -= 1
 		containerHeight -= 2
 
-		layout.drawBorder()
-		layout.drawTitle()
+		layout.drawBorder(left, top, right, bottom)
+		layout.drawTitle(left, top, right, bottom)
 	}
 
 	if layout.direction == direction.Vertical {
@@ -160,7 +217,14 @@ func (layout LinearLayout) draw() {
 
 		for i, view := range layout.views {
 			height := heights[i]
-			width := view.GetAbsoluteWidth()
+
+			var width uint32
+
+			if view.GetWidth() == size.MatchParent || uint32(view.GetWidth()) > containerWidth {
+				width = containerWidth
+			} else {
+				width = uint32(view.GetWidth())
+			}
 
 			currentLeft := uint32(0)
 
@@ -178,18 +242,30 @@ func (layout LinearLayout) draw() {
 			// Clip to container dimensions
 			if currentLeft < containerLeft {
 				currentLeft = containerLeft
+				if layout.isBordered {
+					currentLeft += 1
+				}
 			}
 
 			if currentRight > containerRight {
 				currentRight = containerRight
+				if layout.isBordered {
+					currentRight -= 1
+				}
 			}
 
 			if currentTop < containerTop {
 				currentTop = containerTop
+				if layout.isBordered {
+					currentTop += 1
+				}
 			}
 
 			if currentBottom > containerBottom {
 				currentBottom = containerBottom
+				if layout.isBordered {
+					currentBottom -= 1
+				}
 			}
 
 			view.draw(currentLeft, currentTop, currentRight, currentBottom)
@@ -224,7 +300,13 @@ func (layout LinearLayout) draw() {
 
 		for i, view := range layout.views {
 			width := widths[i]
-			height := view.GetAbsoluteHeight()
+			var height uint32
+
+			if view.GetHeight() == size.MatchParent || uint32(view.GetHeight()) > containerHeight {
+				height = containerHeight
+			} else {
+				height = uint32(view.GetHeight())
+			}
 
 			currentTop := uint32(0)
 
@@ -242,70 +324,65 @@ func (layout LinearLayout) draw() {
 			// Clip to container dimensions
 			if currentLeft < containerLeft {
 				currentLeft = containerLeft
+				if layout.isBordered {
+					currentLeft += 1
+				}
 			}
 
 			if currentRight > containerRight {
 				currentRight = containerRight
+				if layout.isBordered {
+					currentRight -= 1
+				}
 			}
 
 			if currentTop < containerTop {
 				currentTop = containerTop
+				if layout.isBordered {
+					currentTop += 1
+				}
 			}
 
 			if currentBottom > containerBottom {
 				currentBottom = containerBottom
+				if layout.isBordered {
+					currentBottom -= 1
+				}
 			}
 
-			view.draw(currentLeft, currentTop, currentLeft+width, currentTop+height)
+			view.draw(currentLeft, currentTop, currentRight, currentBottom)
 			currentLeft += width
 		}
 	}
 }
 
-func (layout LinearLayout) drawBorder() {
-	containerLeft := int(layout.GetAbsoluteX())
-	containerTop := int(layout.GetAbsoluteY())
-	containerWidth := int(layout.GetAbsoluteWidth())
-	containerHeight := int(layout.GetAbsoluteHeight())
-	containerRight := containerLeft + containerWidth - 1
-	containerBottom := containerTop + containerHeight - 1
-
+func (layout LinearLayout) drawBorder(left uint32, top uint32, right uint32, bottom uint32) {
 	leftTop := '\u250c'
 	rightTop := '\u2510'
 	leftBottom := '\u2514'
 	rightBottom := '\u2518'
 
+	termbox.SetCell(int(left), int(top), leftTop, termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(int(right), int(top), rightTop, termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(int(left), int(bottom), leftBottom, termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(int(right), int(bottom), rightBottom, termbox.ColorDefault, termbox.ColorDefault)
+
+	// horizontal
 	horizontal := '\u2500'
-	vertical := '\u2502'
-
-	termbox.SetCell(containerLeft, containerTop, leftTop, termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(containerRight, containerTop, rightTop, termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(containerLeft, containerBottom, leftBottom, termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(containerRight, containerBottom, rightBottom, termbox.ColorDefault, termbox.ColorDefault)
-
-	// Horizontal
-	for i := containerLeft + 1; i <= containerRight-1; i++ {
-		termbox.SetCell(i, containerTop, horizontal, termbox.ColorDefault, termbox.ColorDefault)
-		termbox.SetCell(i, containerBottom, horizontal, termbox.ColorDefault, termbox.ColorDefault)
+	for i := left + 1; i <= right-1; i++ {
+		termbox.SetCell(int(i), int(top), horizontal, termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(int(i), int(bottom), horizontal, termbox.ColorDefault, termbox.ColorDefault)
 	}
 
-	// Vertical
-	for j := containerTop + 1; j <= containerBottom-1; j++ {
-		termbox.SetCell(containerLeft, j, vertical, termbox.ColorDefault, termbox.ColorDefault)
-		termbox.SetCell(containerRight, j, vertical, termbox.ColorDefault, termbox.ColorDefault)
+	// vertical
+	vertical := '\u2502'
+	for j := top + 1; j <= bottom-1; j++ {
+		termbox.SetCell(int(left), int(j), vertical, termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(int(right), int(j), vertical, termbox.ColorDefault, termbox.ColorDefault)
 	}
 }
 
-func (layout LinearLayout) drawTitle() {
-	containerLeft := int(layout.GetAbsoluteX())
-	containerTop := int(layout.GetAbsoluteY())
-	containerWidth := int(layout.GetAbsoluteWidth())
-	length := len(layout.title)
-	titleLeft := containerLeft + (containerWidth-length)/2
-	titleRight := titleLeft + length - 1
-	for i := titleLeft; i <= titleRight; i++ {
-		termbox.SetCell(i, containerTop, rune(layout.title[i-titleLeft]), termbox.AttrBold|termbox.ColorDefault, termbox.ColorDefault)
-	}
+func (layout LinearLayout) drawTitle(left uint32, top uint32, right uint32, bottom uint32) {
 }
 
 func (layout LinearLayout) GetParent() ViewGroup {

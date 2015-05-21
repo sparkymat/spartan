@@ -20,5 +20,5 @@ type ViewGroup interface {
 	SetParent(parent ViewGroup)
 	GetParent() ViewGroup
 
-	draw()
+	draw(left uint32, top uint32, right uint32, bottom uint32)
 }

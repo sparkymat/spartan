@@ -45,7 +45,8 @@ func (a app) Redraw() {
 }
 
 func (a app) draw() {
-	a.layout.draw()
+	width, height := termbox.Size()
+	a.layout.draw(0, 0, uint32(width)-1, uint32(height)-1)
 }
 
 func (a *app) SetLayout(group ViewGroup) {

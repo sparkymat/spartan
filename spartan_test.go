@@ -13,11 +13,25 @@ func TestSanity(t *testing.T) {
 	app := New()
 
 	layout := LinearLayout{}
-	layout.SetDirection(direction.Vertical)
+	layout.SetDirection(direction.Horizontal)
 	layout.SetWidth(size.MatchParent)
 	layout.SetHeight(size.MatchParent)
 	layout.EnableBorder()
 	layout.SetTitle("spartan")
+
+	menuLayout := LinearLayout{}
+	menuLayout.SetDirection(direction.Vertical)
+	menuLayout.SetWidth(size.MatchParent)
+	menuLayout.SetHeight(size.MatchParent)
+	menuLayout.EnableBorder()
+	menuLayout.SetTitle("menu")
+
+	contentLayout := LinearLayout{}
+	contentLayout.SetDirection(direction.Vertical)
+	contentLayout.SetWidth(size.MatchParent)
+	contentLayout.SetHeight(size.MatchParent)
+	contentLayout.EnableBorder()
+	contentLayout.SetTitle("content")
 
 	helloBox := TextView{text: "Hello, World!"}
 	helloBox.SetWidth(20)
@@ -46,10 +60,13 @@ func TestSanity(t *testing.T) {
 	successBox.SetColor(termbox.ColorGreen)
 	successBox.SetBackgroundColor(termbox.ColorYellow)
 
-	layout.AddView(&helloBox)
-	layout.AddView(&triumphBox)
-	layout.AddView(&noteBox)
-	layout.AddView(&successBox)
+	contentLayout.AddView(&helloBox)
+	contentLayout.AddView(&triumphBox)
+	contentLayout.AddView(&noteBox)
+	contentLayout.AddView(&successBox)
+
+	layout.AddView(&menuLayout)
+	layout.AddView(&contentLayout)
 
 	app.SetLayout(&layout)
 
