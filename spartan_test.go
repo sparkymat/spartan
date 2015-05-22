@@ -52,18 +52,16 @@ func TestSanity(t *testing.T) {
 	noteBox.SetColor(termbox.ColorRed)
 	noteBox.SetBackgroundColor(termbox.ColorBlue)
 
-	successBox := TextView{text: "Huge success"}
-	successBox.SetWidth(15)
-	successBox.SetHeight(size.MatchParent)
-	successBox.SetRightMargin(10)
-	successBox.SetLayoutGravity(gravity.Right)
-	successBox.SetColor(termbox.ColorGreen)
-	successBox.SetBackgroundColor(termbox.ColorYellow)
+	finalBox := ImageView{imagePath: "hello.jpg"}
+	finalBox.SetWidth(size.MatchParent)
+	finalBox.SetHeight(size.MatchParent)
+	finalBox.SetColor(termbox.ColorGreen)
+	finalBox.SetBackgroundColor(termbox.ColorYellow)
 
 	contentLayout.AddView(&helloBox)
 	contentLayout.AddView(&triumphBox)
 	contentLayout.AddView(&noteBox)
-	contentLayout.AddView(&successBox)
+	contentLayout.AddView(&finalBox)
 
 	layout.AddView(&menuLayout)
 	layout.AddView(&contentLayout)
