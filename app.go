@@ -16,6 +16,7 @@ func (a app) Run() error {
 	if err != nil {
 		return err
 	}
+	termbox.SetOutputMode(termbox.Output256)
 
 	defer termbox.Close()
 	termbox.SetInputMode(termbox.InputEsc | termbox.InputMouse)
