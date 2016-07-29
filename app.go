@@ -3,7 +3,7 @@ package spartan
 import "github.com/nsf/termbox-go"
 
 type app struct {
-	layout ViewGroup
+	content Drawable
 }
 
 func New() app {
@@ -46,9 +46,9 @@ func (a app) Redraw() {
 
 func (a app) draw() {
 	width, height := termbox.Size()
-	a.layout.draw(0, 0, uint32(width)-1, uint32(height)-1)
+	a.content.Draw(0, 0, uint32(width)-1, uint32(height)-1)
 }
 
-func (a *app) SetLayout(group ViewGroup) {
-	a.layout = group
+func (a *app) SetContent(content Drawable) {
+	a.content = content
 }

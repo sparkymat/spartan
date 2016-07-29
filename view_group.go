@@ -1,22 +1,25 @@
 package spartan
 
-import "github.com/sparkymat/spartan/size"
+type ViewGroup struct {
+	children []Drawable
+}
 
-type ViewGroup interface {
-	AddView(view View)
+func (group *ViewGroup) AddChild(child Drawable) {
+	group.children = append(group.children, child)
+}
 
-	GetAbsoluteX() uint32
-	GetAbsoluteY() uint32
-	GetAbsoluteWidth() uint32
-	GetAbsoluteHeight() uint32
+func (group ViewGroup) GetAbsoluteX() uint32 {
+	return 0
+}
 
-	SetWidth(width size.Size)
-	SetHeight(height size.Size)
-	SetLeftMargin(x uint32)
-	SetTopMargin(y uint32)
+func (group ViewGroup) GetAbsoluteY() uint32 {
+	return 0
+}
 
-	SetParent(parent ViewGroup)
-	GetParent() ViewGroup
+func (group ViewGroup) GetAbsoluteWidth() uint32 {
+	return 0
+}
 
-	draw(left uint32, top uint32, right uint32, bottom uint32)
+func (group ViewGroup) GetAbsoluteHeight() uint32 {
+	return 0
 }

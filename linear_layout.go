@@ -8,139 +8,65 @@ import (
 )
 
 type LinearLayout struct {
-	parent        ViewGroup
-	views         []View
-	leftMargin    uint32
-	topMargin     uint32
-	rightMargin   uint32
-	bottomMargin  uint32
-	width         size.Size
-	height        size.Size
-	direction     direction.Type
-	isBordered    bool
-	title         string
-	layoutGravity gravity.Type
-}
+	ViewGroup
+	View
 
-func (layout *LinearLayout) SetTitle(title string) {
-	layout.title = title
-}
-
-func (layout LinearLayout) GetTitle() string {
-	return layout.title
+	Direction  direction.Type
+	IsBordered bool
+	Title      string
 }
 
 func (layout *LinearLayout) EnableBorder() {
-	layout.isBordered = true
+	layout.IsBordered = true
 }
 
 func (layout *LinearLayout) DisableBorder() {
-	layout.isBordered = false
-}
-
-func (layout *LinearLayout) SetLayoutGravity(gravity gravity.Type) {
-	layout.layoutGravity = gravity
-}
-
-func (layout LinearLayout) GetLayoutGravity() gravity.Type {
-	return layout.layoutGravity
-}
-
-func (layout *LinearLayout) SetWidth(width size.Size) {
-	layout.width = width
-}
-
-func (layout LinearLayout) GetWidth() size.Size {
-	return layout.width
-}
-
-func (layout *LinearLayout) SetHeight(height size.Size) {
-	layout.height = height
-}
-
-func (layout LinearLayout) GetHeight() size.Size {
-	return layout.height
-}
-
-func (layout *LinearLayout) SetLeftMargin(leftMargin uint32) {
-	layout.leftMargin = leftMargin
-}
-
-func (layout *LinearLayout) SetTopMargin(topMargin uint32) {
-	layout.topMargin = topMargin
-}
-
-func (layout *LinearLayout) SetRightMargin(rightMargin uint32) {
-	layout.rightMargin = rightMargin
-}
-
-func (layout *LinearLayout) SetBottomMargin(bottomMargin uint32) {
-	layout.bottomMargin = bottomMargin
-}
-
-func (layout LinearLayout) GetLeftMargin() uint32 {
-	return layout.leftMargin
-}
-
-func (layout LinearLayout) GetTopMargin() uint32 {
-	return layout.topMargin
-}
-
-func (layout LinearLayout) GetRightMargin() uint32 {
-	return layout.rightMargin
-}
-
-func (layout LinearLayout) GetBottomMargin() uint32 {
-	return layout.bottomMargin
-}
-
-func (layout *LinearLayout) AddView(view View) {
-	layout.views = append(layout.views, view)
+	layout.IsBordered = false
 }
 
 func (layout LinearLayout) GetAbsoluteX() uint32 {
-	if layout.GetParent() == nil {
-		return layout.leftMargin
+	if layout.Parent == nil {
+		return layout.LeftMargin
 	} else {
-		return layout.GetParent().GetAbsoluteX() + layout.leftMargin
+		return layout.Parent.GetAbsoluteX() + layout.LeftMargin
 	}
 }
 
 func (layout LinearLayout) GetAbsoluteY() uint32 {
-	if layout.GetParent() == nil {
-		return layout.topMargin
+	if layout.Parent == nil {
+		return layout.TopMargin
 	} else {
-		return layout.GetParent().GetAbsoluteY() + layout.topMargin
+		return layout.Parent.GetAbsoluteY() + layout.TopMargin
 	}
 }
 
 func (layout LinearLayout) GetAbsoluteWidth() uint32 {
-	if layout.width == size.MatchParent {
-		if layout.parent == nil {
+	if layout.Width == size.MatchParent {
+		if layout.Parent == nil {
 			width, _ := termbox.Size()
 			return uint32(width)
 		} else {
-			return layout.parent.GetAbsoluteWidth()
+			return layout.Parent.GetAbsoluteWidth()
 		}
 	} else {
-		return uint32(layout.width)
+		return uint32(layout.Width)
 	}
 }
 
 func (layout LinearLayout) GetAbsoluteHeight() uint32 {
-	if layout.height == size.MatchParent {
-		if layout.parent == nil {
+	if layout.Height == size.MatchParent {
+		if layout.Parent == nil {
 			_, height := termbox.Size()
 			return uint32(height)
 		} else {
-			return layout.parent.GetAbsoluteHeight()
+			return layout.Parent.GetAbsoluteHeight()
 		}
 	} else {
-		return uint32(layout.height)
+		return uint32(layout.Height)
 	}
 }
 
-func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom uint32) {
+func (layout LinearLayout) Draw(left uint32, top uint32, right uint32, bottom uint32) {
 	containerLeft := left
 	containerTop := top
 	containerRight := right
@@ -148,7 +74,7 @@ func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom ui
 	containerWidth := containerRight - containerLeft + 1
 	containerHeight := containerBottom - containerTop + 1
 
-	if layout.isBordered {
+	if layout.IsBordered {
 		containerLeft += 1
 		containerRight -= 1
 		containerWidth -= 2
@@ -161,25 +87,25 @@ func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom ui
 		layout.drawTitle(left, top, right, bottom)
 	}
 
-	if layout.direction == direction.Vertical {
-		heights := make([]uint32, len(layout.views), len(layout.views))
+	if layout.Direction == direction.Vertical {
+		heights := make([]uint32, len(layout.children), len(layout.children))
 
 		stretchiesCount := uint32(0)
 		totalFixedHeight := uint32(0)
 
-		for i, view := range layout.views {
-			if view.GetHeight() == size.MatchParent {
+		for i, child := range layout.children {
+			if child.GetHeight() == size.MatchParent {
 				stretchiesCount += 1
 			} else {
-				heights[i] = uint32(view.GetHeight())
-				totalFixedHeight += uint32(view.GetHeight())
+				heights[i] = uint32(child.GetHeight())
+				totalFixedHeight += uint32(child.GetHeight())
 			}
 		}
 
 		if stretchiesCount > 0 {
 
-			for i, view := range layout.views {
-				if view.GetHeight() == size.MatchParent {
+			for i, child := range layout.children {
+				if child.GetHeight() == size.MatchParent {
 					heights[i] = (containerHeight - totalFixedHeight) / stretchiesCount
 				}
 			}
@@ -187,24 +113,24 @@ func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom ui
 
 		currentTop := containerTop
 
-		for i, view := range layout.views {
+		for i, child := range layout.children {
 			height := heights[i]
 
 			var width uint32
 
-			if view.GetWidth() == size.MatchParent || uint32(view.GetWidth()) > containerWidth {
+			if child.GetWidth() == size.MatchParent || uint32(child.GetWidth()) > containerWidth {
 				width = containerWidth
 			} else {
-				width = uint32(view.GetWidth())
+				width = uint32(child.GetWidth())
 			}
 
 			currentLeft := uint32(0)
 
-			if view.GetLayoutGravity() == gravity.Left {
-				currentLeft = containerLeft + view.GetLeftMargin()
-			} else if view.GetLayoutGravity() == gravity.Right {
-				currentLeft = containerLeft + (containerWidth - width - view.GetRightMargin())
-			} else if view.GetLayoutGravity() == gravity.Middle {
+			if child.GetLayoutGravity() == gravity.Left {
+				currentLeft = containerLeft + child.GetLeftMargin()
+			} else if child.GetLayoutGravity() == gravity.Right {
+				currentLeft = containerLeft + (containerWidth - width - child.GetRightMargin())
+			} else if child.GetLayoutGravity() == gravity.Middle {
 				currentLeft = containerLeft + (containerWidth-width)/2
 			}
 
@@ -214,55 +140,55 @@ func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom ui
 			// Clip to container dimensions
 			if currentLeft < containerLeft {
 				currentLeft = containerLeft
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentLeft += 1
 				}
 			}
 
 			if currentRight > containerRight {
 				currentRight = containerRight
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentRight -= 1
 				}
 			}
 
 			if currentTop < containerTop {
 				currentTop = containerTop
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentTop += 1
 				}
 			}
 
 			if currentBottom > containerBottom {
 				currentBottom = containerBottom
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentBottom -= 1
 				}
 			}
 
-			view.draw(currentLeft, currentTop, currentRight, currentBottom)
+			child.Draw(currentLeft, currentTop, currentRight, currentBottom)
 
 			currentTop += height
 		}
-	} else if layout.direction == direction.Horizontal {
-		widths := make([]uint32, len(layout.views), len(layout.views))
+	} else if layout.Direction == direction.Horizontal {
+		widths := make([]uint32, len(layout.children), len(layout.children))
 
 		stretchiesCount := uint32(0)
 		totalFixedWidth := uint32(0)
 
-		for i, view := range layout.views {
-			if view.GetWidth() == size.MatchParent {
+		for i, child := range layout.children {
+			if child.GetWidth() == size.MatchParent {
 				stretchiesCount += 1
 			} else {
-				widths[i] = uint32(view.GetWidth())
-				totalFixedWidth += uint32(view.GetWidth())
+				widths[i] = uint32(child.GetWidth())
+				totalFixedWidth += uint32(child.GetWidth())
 			}
 		}
 
 		if stretchiesCount > 0 {
 
-			for i, view := range layout.views {
-				if view.GetWidth() == size.MatchParent {
+			for i, child := range layout.children {
+				if child.GetWidth() == size.MatchParent {
 					widths[i] = (containerWidth - totalFixedWidth) / stretchiesCount
 				}
 			}
@@ -270,23 +196,23 @@ func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom ui
 
 		currentLeft := containerLeft
 
-		for i, view := range layout.views {
+		for i, child := range layout.children {
 			width := widths[i]
 			var height uint32
 
-			if view.GetHeight() == size.MatchParent || uint32(view.GetHeight()) > containerHeight {
+			if child.GetHeight() == size.MatchParent || uint32(child.GetHeight()) > containerHeight {
 				height = containerHeight
 			} else {
-				height = uint32(view.GetHeight())
+				height = uint32(child.GetHeight())
 			}
 
 			currentTop := uint32(0)
 
-			if view.GetLayoutGravity() == gravity.Top {
-				currentTop = containerTop + view.GetTopMargin()
-			} else if view.GetLayoutGravity() == gravity.Bottom {
-				currentTop = containerTop + (containerHeight - height - view.GetBottomMargin())
-			} else if view.GetLayoutGravity() == gravity.Center {
+			if child.GetLayoutGravity() == gravity.Top {
+				currentTop = containerTop + child.GetTopMargin()
+			} else if child.GetLayoutGravity() == gravity.Bottom {
+				currentTop = containerTop + (containerHeight - height - child.GetBottomMargin())
+			} else if child.GetLayoutGravity() == gravity.Center {
 				currentTop = containerTop + (containerHeight-height)/2
 			}
 
@@ -296,33 +222,33 @@ func (layout LinearLayout) draw(left uint32, top uint32, right uint32, bottom ui
 			// Clip to container dimensions
 			if currentLeft < containerLeft {
 				currentLeft = containerLeft
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentLeft += 1
 				}
 			}
 
 			if currentRight > containerRight {
 				currentRight = containerRight
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentRight -= 1
 				}
 			}
 
 			if currentTop < containerTop {
 				currentTop = containerTop
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentTop += 1
 				}
 			}
 
 			if currentBottom > containerBottom {
 				currentBottom = containerBottom
-				if layout.isBordered {
+				if layout.IsBordered {
 					currentBottom -= 1
 				}
 			}
 
-			view.draw(currentLeft, currentTop, currentRight, currentBottom)
+			child.Draw(currentLeft, currentTop, currentRight, currentBottom)
 			currentLeft += width
 		}
 	}
@@ -355,29 +281,13 @@ func (layout LinearLayout) drawBorder(left uint32, top uint32, right uint32, bot
 }
 
 func (layout LinearLayout) drawTitle(left uint32, top uint32, right uint32, bottom uint32) {
-	length := len(layout.title)
+	length := len(layout.Title)
 	layoutWidth := right - left + 1
 	start := int(left) + (int(layoutWidth)-length)/2
 	end := start + length - 1
 
 	for i := start; i <= end; i++ {
-		termbox.SetCell(i, int(top), rune(layout.title[i-start]), termbox.ColorWhite|termbox.AttrBold, termbox.ColorDefault)
+		termbox.SetCell(i, int(top), rune(layout.Title[i-start]), termbox.ColorWhite|termbox.AttrBold, termbox.ColorDefault)
 	}
 
-}
-
-func (layout LinearLayout) GetParent() ViewGroup {
-	return layout.parent
-}
-
-func (layout *LinearLayout) SetParent(parent ViewGroup) {
-	layout.parent = parent
-}
-
-func (layout *LinearLayout) SetDirection(direction direction.Type) {
-	layout.direction = direction
-}
-
-func (layout LinearLayout) GetDirection() direction.Type {
-	return layout.direction
 }

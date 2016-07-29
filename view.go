@@ -1,30 +1,51 @@
 package spartan
 
 import (
+	"github.com/nsf/termbox-go"
 	"github.com/sparkymat/spartan/gravity"
 	"github.com/sparkymat/spartan/size"
 )
 
-type View interface {
-	GetWidth() size.Size
-	GetHeight() size.Size
-	SetWidth(width size.Size)
-	SetHeight(height size.Size)
+type View struct {
+	Parent          *ViewGroup
+	ForegroundColor termbox.Attribute
+	BackgroundColor termbox.Attribute
 
-	SetLeftMargin(leftMargin uint32)
-	SetTopMargin(topMargin uint32)
-	SetRightMargin(rightMargin uint32)
-	SetBottomMargin(bottomMargin uint32)
-	GetLeftMargin() uint32
-	GetTopMargin() uint32
-	GetRightMargin() uint32
-	GetBottomMargin() uint32
+	LeftMargin   uint32
+	TopMargin    uint32
+	RightMargin  uint32
+	BottomMargin uint32
 
-	SetParent(parent ViewGroup)
-	GetParent() ViewGroup
+	Width  size.Size
+	Height size.Size
 
-	SetLayoutGravity(gravity gravity.Type)
-	GetLayoutGravity() gravity.Type
+	LayoutGravity gravity.Type
+}
 
-	draw(left uint32, top uint32, right uint32, bottom uint32)
+func (v View) GetHeight() size.Size {
+	return v.Height
+}
+
+func (v View) GetWidth() size.Size {
+	return v.Width
+}
+
+func (v View) GetLeftMargin() uint32 {
+	return v.LeftMargin
+}
+
+func (v View) GetRightMargin() uint32 {
+	return v.RightMargin
+}
+
+func (v View) GetTopMargin() uint32 {
+	return v.TopMargin
+}
+
+func (v View) GetBottomMargin() uint32 {
+	return v.BottomMargin
+}
+
+func (v View) GetLayoutGravity() gravity.Type {
+	return v.LayoutGravity
 }
