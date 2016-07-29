@@ -62,7 +62,7 @@ func TestSanity(t *testing.T) {
 	noteBox.BackgroundColor = termbox.ColorBlue
 
 	finalBox := ImageView{
-		imagePath: "hello.jpg",
+		ImagePath: "hello.jpg",
 	}
 	finalBox.Width = size.MatchParent
 	finalBox.Height = size.MatchParent

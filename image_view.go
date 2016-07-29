@@ -4,7 +4,7 @@ import "github.com/nsf/termbox-go"
 
 type ImageView struct {
 	View
-	imagePath string
+	ImagePath string
 }
 
 func (box ImageView) Draw(left uint32, top uint32, right uint32, bottom uint32) {
