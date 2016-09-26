@@ -2,16 +2,16 @@ package spartan
 
 import "github.com/nsf/termbox-go"
 
-type app struct {
+type App struct {
 	content Drawable
 }
 
-func New() app {
-	newApp := app{}
+func New() App {
+	newApp := App{}
 	return newApp
 }
 
-func (a app) Run(eventChannel chan termbox.Event) error {
+func (a App) Run(eventChannel chan termbox.Event) error {
 	err := termbox.Init()
 	if err != nil {
 		return err
@@ -36,17 +36,17 @@ func (a app) Run(eventChannel chan termbox.Event) error {
 	return err
 }
 
-func (a app) Redraw() {
+func (a App) Redraw() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	a.draw()
 	termbox.Flush()
 }
 
-func (a app) draw() {
+func (a App) draw() {
 	width, height := termbox.Size()
 	a.content.Draw(0, 0, uint32(width)-1, uint32(height)-1)
 }
 
-func (a *app) SetContent(content Drawable) {
+func (a *App) SetContent(content Drawable) {
 	a.content = content
 }
