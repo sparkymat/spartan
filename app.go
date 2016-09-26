@@ -11,7 +11,7 @@ func New() app {
 	return newApp
 }
 
-func (a app) Run() error {
+func (a app) Run(eventChannel chan termbox.Event) error {
 	err := termbox.Init()
 	if err != nil {
 		return err
@@ -22,15 +22,12 @@ func (a app) Run() error {
 	termbox.SetInputMode(termbox.InputEsc | termbox.InputMouse)
 	a.Redraw()
 
-loop:
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventResize:
 			a.Redraw()
 		case termbox.EventKey:
-			if ev.Key == termbox.KeyEsc {
-				break loop
-			}
+			eventChannel <- ev
 		case termbox.EventError:
 			panic(ev.Err)
 		}
