@@ -23,3 +23,9 @@ func (group ViewGroup) GetAbsoluteWidth() uint32 {
 func (group ViewGroup) GetAbsoluteHeight() uint32 {
 	return 0
 }
+
+func (layout LinearLayout) OnStart() {
+	for _, c := range layout.children {
+		c.OnStart()
+	}
+}

@@ -12,6 +12,10 @@ func New() App {
 }
 
 func (a App) Run(eventChannel chan termbox.Event) error {
+	if a.content == nil {
+		panic("No content specified")
+	}
+
 	err := termbox.Init()
 	if err != nil {
 		return err
@@ -20,6 +24,9 @@ func (a App) Run(eventChannel chan termbox.Event) error {
 
 	defer termbox.Close()
 	termbox.SetInputMode(termbox.InputEsc | termbox.InputMouse)
+
+	a.content.OnStart()
+
 	a.Redraw()
 
 	for {

@@ -49,3 +49,6 @@ func (v View) GetBottomMargin() uint32 {
 func (v View) GetLayoutGravity() gravity.Type {
 	return v.LayoutGravity
 }
+
+func (v View) OnStart() {
+}

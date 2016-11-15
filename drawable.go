@@ -15,4 +15,6 @@ type Drawable interface {
 	GetHeight() size.Size
 	GetWidth() size.Size
 	GetLayoutGravity() gravity.Type
+
+	OnStart()
 }
