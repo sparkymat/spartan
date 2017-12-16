@@ -8,48 +8,71 @@ A windowing toolkit based on termbox. Most of the paradigms used here are inspir
 ### Example
 
 ``` go
-	app := New()
+	app := spartan.New()
 
-	layout := LinearLayout{}
-	layout.SetDirection(direction.Vertical)
-	layout.SetWidth(size.MatchParent)
-	layout.SetHeight(size.MatchParent)
+	layout := spartan.LinearLayout{
+		Direction: direction.Vertical,
+		View: spartan.View{
+			Width:  size.MatchParent,
+			Height: size.MatchParent,
+		},
+	}
 
-	helloBox := TextView{text: "Hello, World!"}
-	helloBox.SetWidth(20)
-	helloBox.SetHeight(1)
-	helloBox.SetColor(termbox.ColorWhite)
-	helloBox.SetBackgroundColor(termbox.ColorRed)
+	helloBox := spartan.TextView{
+		Text: "Hello, World!",
+		View: spartan.View{
+			Width:           20,
+			Height:          1,
+			ForegroundColor: termbox.ColorWhite,
+			BackgroundColor: termbox.ColorRed,
+		},
+	}
 
-	triumphBox := TextView{text: "This was a triumph"}
-	triumphBox.SetWidth(size.MatchParent)
-	triumphBox.SetHeight(3)
-	triumphBox.SetColor(termbox.ColorBlack)
-	triumphBox.SetBackgroundColor(termbox.ColorMagenta)
+	triumphBox := spartan.TextView{
+		Text: "This was a triumph",
+		View: spartan.View{
+			Width:           size.MatchParent,
+			Height:          3,
+			ForegroundColor: termbox.ColorBlack,
+			BackgroundColor: termbox.ColorMagenta,
+		},
+	}
 
-	noteBox := TextView{text: "I am making a note here"}
-	noteBox.SetWidth(6)
-	noteBox.SetHeight(size.MatchParent)
-	noteBox.SetLayoutGravity(gravity.Center)
-	noteBox.SetColor(termbox.ColorRed)
-	noteBox.SetBackgroundColor(termbox.ColorBlue)
+	noteBox := spartan.TextView{
+		Text: "I am making a note here",
+		View: spartan.View{
+			Width:           6,
+			Height:          size.MatchParent,
+			LayoutGravity:   gravity.Center,
+			ForegroundColor: termbox.ColorRed,
+			BackgroundColor: termbox.ColorBlue,
+		},
+	}
 
-	successBox := TextView{text: "Huge success"}
-	successBox.SetWidth(15)
-	successBox.SetHeight(size.MatchParent)
-	successBox.SetRightMargin(10)
-	successBox.SetLayoutGravity(gravity.Right)
-	successBox.SetColor(termbox.ColorGreen)
-	successBox.SetBackgroundColor(termbox.ColorYellow)
+	successBox := spartan.TextView{
+		Text: "Huge success",
+		View: spartan.View{
+			Width:           15,
+			Height:          size.MatchParent,
+			RightMargin:     10,
+			LayoutGravity:   gravity.Right,
+			ForegroundColor: termbox.ColorGreen,
+			BackgroundColor: termbox.ColorYellow,
+		},
+	}
 
-	layout.AddView(&helloBox)
-	layout.AddView(&triumphBox)
-	layout.AddView(&noteBox)
-	layout.AddView(&successBox)
+	layout.AddChild(&helloBox)
+	layout.AddChild(&triumphBox)
+	layout.AddChild(&noteBox)
+	layout.AddChild(&successBox)
 
-	app.SetLayout(&layout)
+	app.SetContent(&layout)
 
-	app.Run()
+	eventChannel := make(chan termbox.Event)
+
+	go EventHandler(eventChannel)
+
+	app.Run(eventChannel)
 ```
 
 produces the following
